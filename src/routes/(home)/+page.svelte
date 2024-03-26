@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import { Country } from '$lib';
 	import { supabase } from '$lib/scripts/supabase.js';
+	import ModalEdit from '$lib/ModalEdit.svelte';
 
 	export let data;
-	class Country {
-		id: Number = 0;
-		name: String = '';
-	}
 	let newCountry: Country = new Country();
 	async function addCountry(country: Country) {
 		await supabase.from('countries').insert({ name: country.name });
@@ -25,6 +23,9 @@
 	let sortByName = false;
 	$: countries = sortByName ? [...data.countries].sort((c1, c2) => c1.name.localeCompare(c2.name.toString())) : [...data.countries].sort((c1, c2) => Number(c1.id) - Number(c2.id));
 	let enableEdit = false;
+
+	let showModal = false;
+	let selectedCountry: Country = new Country();
 </script>
 
 <h2 class="text-nowrap">Страны</h2>
@@ -85,9 +86,18 @@
 			<button class="btn btn-sm text-danger" title="Удалить" on:click={async () => await removeCountry(item.id)}>
 				<i class="fa-solid fa-trash"></i>
 			</button>
+			<button
+				class="btn btn-sm text-dark"
+				on:click={() => {
+					selectedCountry = item;
+					showModal = true;
+				}}>Редактировать</button
+			>
 		</div>
 	{/each}
 </div>
+
+<ModalEdit bind:showModal title="Редактировать страну" item={selectedCountry} />
 
 <style>
 	.item:hover {

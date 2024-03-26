@@ -1,1 +1,4 @@
-// place files you want to import through the `$lib` alias in this folder.
+export class Country {
+	id: Number = 0;
+	name: String = '';
+}
